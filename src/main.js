@@ -40,6 +40,10 @@ Crafty.c('Proj', {
 	},
 	Move: function(){
 		this.move('e', 1)
+		if (this.x<0 || this.x>800 || this.y<0 || this.y>300) {
+			this.destroy();
+			console.log("It's gone");
+		}
 	}
 	
 	
