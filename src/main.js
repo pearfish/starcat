@@ -7,11 +7,16 @@ Crafty.c('PlayerCat', {
 		this.onHit('Proj', this.Spawn)
 	},
 	Shoot: function() {
-		console.log("PEW PEW PEW");
+		if( this.isDown('SPACE')){
+			console.log("PEW PEW PEW");
+			var p = Crafty.e('Proj');
+			p.x= this.x+30;
+			p.y = this.y;
+		}
 	},
 	Spawn: function(){
-		this.x=400
-		this.y=300
+		this.x=300
+		this.y=150
 		this.w=30
 		this.h=20
 	}
@@ -30,8 +35,12 @@ Crafty.c('Proj', {
 		this.onHit('Collision', function() {
 			this.destroy();
 		});
+		this.bind('EnterFrame', this.Move)
+		console.log("Ima shoot you")
+	},
+	Move: function(){
+		this.move('e', 1)
 	}
-	
 	
 	
 });
@@ -46,7 +55,7 @@ Crafty.c('Vaccum', {
 
 Game = {
 	start: function(){
-		Crafty.init(800,600);
+		Crafty.init(800,300);
 		Crafty.background('green');
 		var pc = Crafty.e('PlayerCat')
 		pc.Spawn()
