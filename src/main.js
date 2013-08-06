@@ -40,8 +40,6 @@ Crafty.c('Proj', {
 			this.destroy();
 		}
 	}
-	
-	
 });
 
 Crafty.c('Vacuum', {
@@ -117,9 +115,15 @@ Crafty.scene("game", function() {
 	//generate the player's avatar
 	pc = Crafty.e('PlayerCat')
 	pc.Spawn();
-	
+	console.log('Ultra-QUACK')
+	Crafty.e("2D, DOM, Text").attr({ x: 100, y: 100 }).text("Look at me!!").textColor('#FF0000');
 	//bind vaccum spawning to the game tick
 	pc.bind('EnterFrame', Game.spawnVac);
+	
+	
+	Crafty.e("2D,DOM,FPS,Text").attr({maxValues:10, x:0, y:0}).textColor('#ffff00').bind("MessureFPS",function(fps){ 
+			this.text("FPS"+fps.value); //Display Current FPS 
+	})
 });
 
 Game = {
@@ -127,14 +131,11 @@ Game = {
 		Crafty.init(800,300);
 		Crafty.background("url('assets/img/starcat_background.png')"); 
 		Crafty.scene("start");
-		/* moved to the game scene
-		//generate the player's avatar
-		var pc = Crafty.e('PlayerCat')
-		pc.Spawn();
 		
-		//bind vaccum spawning to the game tick
-		pc.bind('EnterFrame', Game.spawnVac);
-		*/
+		 
+		
+		
+		
 	},
 	
 	//vacuums are spawned every 100 frames at a random Y coordinate 
