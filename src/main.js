@@ -4,13 +4,13 @@ Crafty.c('PlayerCat', {
 		.fourway(2)
 		.color('rgb(70, 20, 70)');
 		this.bind('KeyDown', this.Shoot);
-		this.onHit('Vacuum', this.Spawn)
+		this.onHit('Vacuum', this.GameOver);
 	},
 	Shoot: function() {
 		if( this.isDown('SPACE')){
 			var p = Crafty.e('Proj');
 			p.x= this.x+30;
-			p.y = this.y;
+			p.y = this.y+5;
 		}
 	},
 	Spawn: function(){
@@ -18,6 +18,9 @@ Crafty.c('PlayerCat', {
 		this.y=150
 		this.w=30
 		this.h=20
+	},
+	GameOver: function() {
+		Crafty.scene("gameover");
 	}
 	//on collide : lots of stuff
 });
@@ -53,7 +56,10 @@ Crafty.c('Vacuum', {
 		this.bind('EnterFrame', this.Move);
 	},
 	Move: function(){
-		this.move('w', 1)
+		//move to the left (west) by 1 each frame
+		this.move('w', 1);
+		
+		//destroy it if it goes off screen
 		if (this.x<0 || this.x>900 || this.y<0 || this.y>300) {
 			this.destroy();
 		}
@@ -63,25 +69,80 @@ Crafty.c('Vacuum', {
 		//fireball sprite!
 		this.destroy();
 		//hits[0].destroy()
+		//increment kill count
 	}
 });
 
+
+Crafty.scene("start", function() {
+	//add a title to DOM
+	Crafty.e("2D, DOM, Text").attr({ w: 150, h: 50, x: 150, y: 120 })
+            .text("S T A R C A T")
+            .css({ "text-align": "center", "color": "white", "font-size": "25px"});
+	
+	//add instructions to DOM
+	Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 400, y: 100 })
+            .text("control the cat with <em>WASD</em> or <em>arrow keys</em><br>fire your anti-vacuum munitions with the <em>space key</em><br>defeat the <em>vacuum menace</em>")
+            .css({ "color": "white", "font-size": "10px"});
+	
+	//should eventually set the background to a funny starcat picture, but when this happens, make sure to set background to something else in scene(game)
+	
+	//add more instructions, bind a listener to switch scene
+	var startbox = Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 600, y: 250 })
+            .text("Click here to start!")
+            .css({ "text-align": "center", "color": "white" });
+	//this could probably be done more smoothly but whatever
+	startbox.switchScene = function() {
+		Crafty.scene("game");
+	};
+	Crafty.addEvent(startbox, Crafty.stage.elem, "mousedown", startbox.switchScene);
+});
+
+Crafty.scene("gameover", function() {
+	Crafty.e("2D, DOM, Text").attr({ w: 200, h: 200, x: 300, y:100})
+		.text("<em>YOU DIED.  Yay!</em><br><br>Score:<br>"+"13"+" vacuums annihilated")
+		.css({ "text-align": "center", "color": "white" });
+	
+	var startbox = Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 600, y: 250 })
+            .text("Click here to try again!")
+            .css({ "text-align": "center", "color": "white" });
+	//this could probably be done more smoothly but whatever
+	startbox.switchScene = function() {
+		Crafty.scene("game");
+	};
+	Crafty.addEvent(startbox, Crafty.stage.elem, "mousedown", startbox.switchScene);	
+});
+
+Crafty.scene("game", function() {
+	//generate the player's avatar
+	pc = Crafty.e('PlayerCat')
+	pc.Spawn();
+	
+	//bind vaccum spawning to the game tick
+	pc.bind('EnterFrame', Game.spawnVac);
+});
 
 Game = {
 	start: function(){
 		Crafty.init(800,300);
 		Crafty.background("url('assets/img/starcat_background.png')"); 
+		Crafty.scene("start");
+		/* moved to the game scene
+		//generate the player's avatar
 		var pc = Crafty.e('PlayerCat')
-		pc.Spawn()
+		pc.Spawn();
+		
+		//bind vaccum spawning to the game tick
 		pc.bind('EnterFrame', Game.spawnVac);
+		*/
 	},
+	
+	//vacuums are spawned every 100 frames at a random Y coordinate 
 	spawnVac: function(data){
 		if( data['frame'] % 100 == 0){
 			var vroom = Crafty.e('Vacuum');
 			vroom.y=Math.random()*250+25;
 		}
 	}
-	//logic to spawn vaccums
-
 }
 		
