@@ -67,10 +67,52 @@ Crafty.c('Vacuum', {
 		//fireball sprite!
 		this.destroy();
 		//hits[0].destroy()
-		//increment kill count
+		scoreboard.increaseKills();
+		scoreboard.increaseScore('vacuum');
 	}
 });
 
+Crafty.c('Score', {
+	init: function() {
+		this.requires('2D, DOM, Text');
+		
+		this.kills = 0;
+		this.score = 0;
+		
+		this.textColor('#FFFFFFF');
+		this.x=735;
+		this.y=10;
+		this.h=20;
+		this.w=100;
+		this.text("kills-   "+this.kills+"<br>score- "+this.score);
+		console.log('quack');
+	},
+	increaseKills: function() {
+		this.kills++;
+		this.text("kills-   "+this.kills+"<br>score- "+this.score);
+		console.log(this.kills);
+	},
+	increaseScore: function(enemy) {
+		switch (enemy) {
+		case 'asteroid':
+			this.score+=100;
+			break;
+		case 'vacuum':
+			this.score+=500;
+			break;
+		case 'boss':
+			this.score+=5000;
+			break;
+		}
+		this.text("kills-   "+this.kills+"<br>score- "+this.score);
+		console.log(this.score);
+	},
+	nextlvl: function() {
+		this.kills = 0;
+		this.score += 5000;
+	}
+
+});
 
 Crafty.scene("start", function() {
 	//add a title to DOM
@@ -113,10 +155,12 @@ Crafty.scene("gameover", function() {
 
 Crafty.scene("game", function() {
 	//generate the player's avatar
-	pc = Crafty.e('PlayerCat')
+
+	pc = Crafty.e('PlayerCat');
 	pc.Spawn();
-	console.log('Ultra-QUACK')
-	Crafty.e("2D, DOM, Text").attr({ x: 100, y: 100 }).text("Look at me!!").textColor('#FF0000');
+
+	scoreboard = Crafty.e('Score');
+	scoreboard.init();
 	//bind vaccum spawning to the game tick
 	pc.bind('EnterFrame', Game.spawnVac);
 	
@@ -130,12 +174,10 @@ Game = {
 	start: function(){
 		Crafty.init(800,300);
 		Crafty.background("url('assets/img/starcat_background.png')"); 
-		Crafty.scene("start");
-		
-		 
-		
-		
-		
+		Crafty.scene("start");		
+		//generate the player's avatar
+		var pc = Crafty.e('PlayerCat')
+		pc.Spawn();		
 	},
 	
 	//vacuums are spawned every 100 frames at a random Y coordinate 
