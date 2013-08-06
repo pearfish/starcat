@@ -27,15 +27,15 @@ Crafty.c('PlayerCat', {
 
 Crafty.c('Proj', {
 	init: function() {
-		this.requires('2D, Canvas, Color, Collision')//DOM, Image,
-		//this.image('assets/img/Fish.png')
-		this.color('red')
-		this.w=10
-		this.h=10
+		this.requires('2D, Canvas, Color, Collision, Image')//DOM, Image,
+		//this.color('red')
+		this.image('assets/img/Fish.png')
+		//this.attr({w: 10, h: 10})
 		this.bind('EnterFrame', this.Move)
-	},
+	}, 
 	Move: function(){
 		this.move('e', 2)
+		
 		if (this.x<0 || this.x>800 || this.y<0 || this.y>300) {
 			this.destroy();
 		}
