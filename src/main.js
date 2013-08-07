@@ -42,25 +42,14 @@ Crafty.c('Proj', {
 	}
 });
 
-Crafty.c('Vacuum', {
+Crafty.c('Enemy', {
 	init: function(){
 		this.requires('Color, 2D, Canvas, Collision');
-		this.w=20;
-		this.h=20;
 		this.x=850;
-		this.y=150;
-		this.color('blue');
 		this.onHit('Proj', this.Boom);
-		this.bind('EnterFrame', this.Move);
-	},
-	Move: function(){
-		//move to the left (west) by 1 each frame
-		this.move('w', 1);
-		
-		//destroy it if it goes off screen
-		if (this.x<0 || this.x>900 || this.y<0 || this.y>300) {
-			this.destroy();
-		}
+		//this.bind('EnterFrame', function(){this.Move});
+		this.score = 'Error no score'
+		this.bind('EnterFrame', this.OutOfBoundsSelfDestruct);
 	},
 	Boom: function(hits) {
 		console.log("boom! " +hits);
@@ -68,9 +57,32 @@ Crafty.c('Vacuum', {
 		this.destroy();
 		//hits[0].destroy()
 		scoreboard.increaseKills();
-		scoreboard.increaseScore('vacuum');
+		scoreboard.increaseScore(this.score);
+	},
+	OutOfBoundsSelfDestruct: function(){
+		//destroy it if it goes off screen
+		if (this.x<0 || this.x>900 || this.y<0 || this.y>300) {
+			this.destroy();
+		}
 	}
+	
 });
+
+Crafty.c('Vacuum', {
+	init: function(){
+		this.requires('Color, 2D, Canvas, Collision, Enemy');
+		this.w=20;
+		this.h=20;
+		this.x=850;
+		this.y=150;
+		this.color('blue');
+		this.score = 500;
+		this.bind('EnterFrame', function(){
+			this.move('w', 1);
+		});
+	},
+});
+	
 
 Crafty.c('Score', {
 	init: function() {
@@ -92,18 +104,8 @@ Crafty.c('Score', {
 		this.text("kills-   "+this.kills+"<br>score- "+this.score);
 		console.log(this.kills);
 	},
-	increaseScore: function(enemy) {
-		switch (enemy) {
-		case 'asteroid':
-			this.score+=100;
-			break;
-		case 'vacuum':
-			this.score+=500;
-			break;
-		case 'boss':
-			this.score+=5000;
-			break;
-		}
+	increaseScore: function(amount) {
+		this.score+=amount
 		this.text("kills-   "+this.kills+"<br>score- "+this.score);
 		console.log(this.score);
 	},
@@ -138,21 +140,6 @@ Crafty.scene("start", function() {
 	Crafty.addEvent(startbox, Crafty.stage.elem, "mousedown", startbox.switchScene);
 });
 
-Crafty.scene("gameover", function() {
-	Crafty.e("2D, DOM, Text").attr({ w: 200, h: 200, x: 300, y:100})
-		.text("<em>YOU DIED.  Yay!</em><br><br>Score:<br>"+"13"+" vacuums annihilated")
-		.css({ "text-align": "center", "color": "white" });
-	
-	var startbox = Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 600, y: 250 })
-            .text("Click here to try again!")
-            .css({ "text-align": "center", "color": "white" });
-	//this could probably be done more smoothly but whatever
-	startbox.switchScene = function() {
-		Crafty.scene("game");
-	};
-	Crafty.addEvent(startbox, Crafty.stage.elem, "mousedown", startbox.switchScene);	
-});
-
 Crafty.scene("game", function() {
 	//generate the player's avatar
 
@@ -169,6 +156,23 @@ Crafty.scene("game", function() {
 			this.text("FPS"+fps.value); //Display Current FPS 
 	})
 });
+
+Crafty.scene("gameover", function() {
+	Crafty.e("2D, DOM, Text").attr({ w: 200, h: 200, x: 300, y:100})
+		.text("<em>YOU DIED.  Yay!</em><br><br>Score:<br>"+scoreboard.kills+" vacuums annihilated")
+		.css({ "text-align": "center", "color": "white" });
+	
+	var startbox = Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 600, y: 250 })
+            .text("Click here to try again!")
+            .css({ "text-align": "center", "color": "white" });
+	//this could probably be done more smoothly but whatever
+	startbox.switchScene = function() {
+		Crafty.scene("game");
+	};
+	Crafty.addEvent(startbox, Crafty.stage.elem, "mousedown", startbox.switchScene);	
+});
+
+
 
 Game = {
 	start: function(){
