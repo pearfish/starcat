@@ -12,8 +12,11 @@ Crafty.c('PlayerCat', {
 		this.requires('Fourway, Color, 2D, Canvas, Keyboard, Image, Collision')
 		.fourway(2)
 		this.bind('KeyDown', this.Shoot);
-		this.onHit('Vacuum', this.GameOver);
+		this.hitbox = Crafty.e("Fourway, 2D, DOM, Collision").attr({ w: 4, h: 4, x: 313, y:158})
+			.fourway(2)
+			.onHit('Enemy', this.GameOver);
 		this.image('assets/img/spacecat_tiny.png');
+		
 	},
 	Shoot: function() {
 		if( this.isDown('SPACE')){
@@ -37,7 +40,6 @@ Crafty.c('PlayerCat', {
 Crafty.c('Proj', {
 	init: function() {
 		this.requires('2D, Canvas, Color, Collision, Image')//DOM, Image,
-		//this.color('red')
 		this.image('assets/img/Fish.png')
 		//this.attr({w: 10, h: 10})
 		this.bind('EnterFrame', this.Move)
