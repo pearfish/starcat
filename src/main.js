@@ -1,4 +1,4 @@
-// psuedo-statics
+// psuedo-Constants
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 300
 OOB_DOWN = CANVAS_HEIGHT * 1.5
@@ -96,11 +96,18 @@ Crafty.c('Asteroid', {
 	init: function(){
 		this.requires('Color, 2D, Canvas, Collision, Enemy');
 		this.w=(Math.random()+Math.random()) * 20;
-		this.h=(Math.random()+Math.random()) * this.h;
+		this.h=(Math.random()+Math.random()) * this.w;
 		this.x=850;
-		this.y=Math.random()*250+25;
+		this.y=Math.random()*OOB_DOWN;
+		this.color('brown')
+		var targetY = Math.random()*CANVAS_HEIGHT;
+		var screentime = (Math.random()* 17 + 10) * 60
+		this.dy = (this.y-targetY)/screentime
+		this.dx = (-this.x)/screentime
+		this.score = Math.floor(100/this.h)*5;
 		this.bind('EnterFrame', function(){
-			this.move('w', 1);
+			this.move('e', this.dx);
+			this.move('n', this.dy);
 		});
 	}
 });
@@ -208,8 +215,11 @@ Game = {
 	
 	//vacuums are spawned every 100 frames at a random Y coordinate 
 	spawnVac: function(data){
-		if( data['frame'] % 100 == 0){
-			var vroom = Crafty.e('Vacuum');
+		if( data['frame'] % 120 == 0){
+			Crafty.e('Asteroid');
+		}
+		if( data['frame'] % 250 == 0){
+			Crafty.e('Vacuum');
 		}
 	}
 }
