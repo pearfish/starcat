@@ -1,3 +1,12 @@
+// psuedo-statics
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 300
+OOB_DOWN = CANVAS_HEIGHT * 1.5
+OOB_UP = CANVAS_HEIGHT * -.5
+OOB_LEFT = 0
+OOB_RIGHT = CANVAS_WIDTH * 1.3
+
+//
 Crafty.c('PlayerCat', {
 	init: function() {
 		this.requires('Fourway, Color, 2D, Canvas, Keyboard,  Collision')
@@ -61,7 +70,7 @@ Crafty.c('Enemy', {
 	},
 	OutOfBoundsSelfDestruct: function(){
 		//destroy it if it goes off screen
-		if (this.x<0 || this.x>900 || this.y<0 || this.y>300) {
+		if (this.x<OOB_LEFT || this.x>OOB_RIGHT || this.y<OOB_UP || this.y>OOB_DOWN) {
 			this.destroy();
 		}
 	}
@@ -74,13 +83,26 @@ Crafty.c('Vacuum', {
 		this.w=20;
 		this.h=20;
 		this.x=850;
-		this.y=150;
+		this.y=Math.random()*250+25;
 		this.color('blue');
 		this.score = 500;
 		this.bind('EnterFrame', function(){
 			this.move('w', 1);
 		});
 	},
+});
+
+Crafty.c('Asteroid', {
+	init: function(){
+		this.requires('Color, 2D, Canvas, Collision, Enemy');
+		this.w=(Math.random()+Math.random()) * 20;
+		this.h=(Math.random()+Math.random()) * this.h;
+		this.x=850;
+		this.y=Math.random()*250+25;
+		this.bind('EnterFrame', function(){
+			this.move('w', 1);
+		});
+	}
 });
 	
 
@@ -176,7 +198,7 @@ Crafty.scene("gameover", function() {
 
 Game = {
 	start: function(){
-		Crafty.init(800,300);
+		Crafty.init(CANVAS_WIDTH,CANVAS_HEIGHT);
 		Crafty.background("url('assets/img/starcat_background.png')"); 
 		Crafty.scene("start");		
 		//generate the player's avatar
@@ -188,7 +210,6 @@ Game = {
 	spawnVac: function(data){
 		if( data['frame'] % 100 == 0){
 			var vroom = Crafty.e('Vacuum');
-			vroom.y=Math.random()*250+25;
 		}
 	}
 }
