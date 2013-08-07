@@ -9,11 +9,14 @@ OOB_RIGHT = CANVAS_WIDTH * 1.3
 //
 Crafty.c('PlayerCat', {
 	init: function() {
-		this.requires('Fourway, Color, 2D, Canvas, Keyboard,  Collision')
+		this.requires('Fourway, Color, 2D, Canvas, Keyboard, Image, Collision')
 		.fourway(2)
-		.color('rgb(70, 20, 70)');
 		this.bind('KeyDown', this.Shoot);
-		this.onHit('Vacuum', this.GameOver);
+		this.hitbox = Crafty.e("Fourway, 2D, DOM, Collision").attr({ w: 4, h: 4, x: 313, y:158})
+			.fourway(2)
+			.onHit('Enemy', this.GameOver);
+		this.image('assets/img/spacecat_tiny.png');
+		
 	},
 	Shoot: function() {
 		if( this.isDown('SPACE')){
@@ -37,7 +40,6 @@ Crafty.c('PlayerCat', {
 Crafty.c('Proj', {
 	init: function() {
 		this.requires('2D, Canvas, Color, Collision, Image')//DOM, Image,
-		//this.color('red')
 		this.image('assets/img/Fish.png')
 		//this.attr({w: 10, h: 10})
 		this.bind('EnterFrame', this.Move)
@@ -59,6 +61,7 @@ Crafty.c('Enemy', {
 		//this.bind('EnterFrame', function(){this.Move});
 		this.score = 'Error no score'
 		this.bind('EnterFrame', this.OutOfBoundsSelfDestruct);
+		
 	},
 	Boom: function(hits) {
 		console.log("boom! " +hits);
@@ -79,16 +82,16 @@ Crafty.c('Enemy', {
 
 Crafty.c('Vacuum', {
 	init: function(){
-		this.requires('Color, 2D, Canvas, Collision, Enemy');
+		this.requires('Color, 2D, Canvas, Collision, Enemy, Image');
 		this.w=20;
 		this.h=20;
 		this.x=850;
 		this.y=Math.random()*250+25;
-		this.color('blue');
 		this.score = 500;
 		this.bind('EnterFrame', function(){
 			this.move('w', 1);
 		});
+		this.image('assets/img/starcat_vacuum_tiny.png');
 	},
 });
 
